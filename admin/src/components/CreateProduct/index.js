@@ -320,7 +320,7 @@ const CreateProduct = ({ isVisible, handleClose, handleClickSave }) => {
                 </Flex>
               ) : (
                 <Button variant="default" onClick={handleSaveProduct}>
-                  create
+                  Create
                 </Button>
               )
             }
