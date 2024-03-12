@@ -99,4 +99,12 @@ module.exports = [
       auth: false,
     },
   },
+  {
+    method: 'GET',
+    path: '/getRedirectUrl/:id',
+    handler: 'stripeController.getRedirectUrl',
+    config: {
+      auth: false,
+    },
+  },
 ];
