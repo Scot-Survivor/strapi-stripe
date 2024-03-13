@@ -182,6 +182,7 @@ module.exports = ({ strapi }) => ({
         metadata: {
           productId: `${productId}`,
           productName: `${productName}`,
+          productQuantity: '1',
         },
       });
       return session;
