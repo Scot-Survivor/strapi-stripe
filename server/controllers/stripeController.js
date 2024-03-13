@@ -207,7 +207,8 @@ module.exports = {
             res.isSubscription,
             res.stripeProductId,
             res.title,
-            email
+            email,
+            id
           );
 
         ctx.send({ url: checkoutSessionResponse.url }, 200);

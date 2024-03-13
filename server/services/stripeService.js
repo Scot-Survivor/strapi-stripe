@@ -137,7 +137,8 @@ module.exports = ({ strapi }) => ({
     isSubscription,
     productId,
     productName,
-    userEmail
+    userEmail,
+    strapiProductId
   ) {
     try {
       const stripeSettings = await this.initialize();
@@ -183,6 +184,7 @@ module.exports = ({ strapi }) => ({
           productId: `${productId}`,
           productName: `${productName}`,
           productQuantity: '1',
+          strapiProductId: strapiProductId
         },
       });
       return session;
