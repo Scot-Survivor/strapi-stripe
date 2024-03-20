@@ -107,4 +107,20 @@ module.exports = [
       auth: false,
     },
   },
+  {
+    method: 'GET',
+    path:'/getMultiRedirectUrl/:ids/:quantities/:email',
+    handler: 'stripeController.getMultiRedirectUrl',
+    config: {
+      auth: false,
+    },
+  },
+  {
+    method: 'GET',
+    path:'/getMultiRedirectUrl/:ids/:quantities',
+    handler: 'stripeController.getMultiRedirectUrl',
+    config: {
+      auth: false,
+    },
+  }
 ];

@@ -111,7 +111,9 @@ module.exports = {
       if (retrieveCheckoutSessionResponse.payment_status === 'paid') {
         const { customer_details, amount_total, id, metadata } = retrieveCheckoutSessionResponse;
 
-        const queryId = metadata.productId;
+        const queryId = metadata.productIds.split(',')[0];
+        console.log(metadata);
+        console.log(queryId);
         // get id from productschema
         const res = await strapi
           .query('plugin::strapi-stripe.ss-product')
@@ -217,4 +219,37 @@ module.exports = {
       console.error(error);
     }
   },
+
+  async getMultiRedirectUrl(ctx) {
+    const {ids, quantities, email} = ctx.params;
+    // Split IDs by comma
+    let parsedIds = ids.split(',');
+    let parsedQuantities = quantities.split(',');
+    const res = await strapi.query('plugin::strapi-stripe.ss-product')
+      .findMany({where: {id: parsedIds}, populate: true});
+
+    if (res) {
+        let stripePriceIds = res.map((product) => product.stripePriceId);
+        let stripePlanIds = [];
+        let stripeProductIds = res.map((product) => product.stripeProductId);
+        let stripeNames = res.map((product) => product.title);
+        let productQuantities = parsedQuantities;
+        let strapiProductIds = parsedIds
+
+      const checkoutSessionResponse = await strapi
+        .plugin('strapi-stripe')
+        .service('stripeService')
+        .createMultiCheckoutSession(
+          stripePriceIds,
+          stripePlanIds,
+          stripeProductIds,
+          stripeNames,
+          productQuantities,
+          email,
+          strapiProductIds
+        );
+
+        ctx.send({ url: checkoutSessionResponse.url }, 200);
+    }
+  }
 };

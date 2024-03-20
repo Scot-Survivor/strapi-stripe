@@ -181,10 +181,10 @@ module.exports = ({ strapi }) => ({
         success_url: `${stripeSettings.checkoutSuccessUrl}?sessionId={CHECKOUT_SESSION_ID}`,
         cancel_url: `${stripeSettings.checkoutCancelUrl}`,
         metadata: {
-          productId: `${productId}`,
-          productName: `${productName}`,
-          productQuantity: '1',
-          strapiProductId: strapiProductId
+          productIds: `${[productId]}`,
+          productNames: `${[productName]}`,
+          productQuantities: `${[1]}`,
+          strapiProductIds: `${[strapiProductId]}`
         },
       });
       return session;
@@ -192,6 +192,61 @@ module.exports = ({ strapi }) => ({
       throw new ApplicationError(error.message);
     }
   },
+
+  async createMultiCheckoutSession(
+    stripePriceIds,
+    stripePlanIds,
+    productIds,
+    productNames,
+    productQuantities,
+    userEmail,
+    strapiProductIds
+  ) {
+    try {
+      const stripeSettings = await this.initialize();
+      let stripe;
+      if (stripeSettings.isLiveMode) {
+        stripe = new Stripe(liveStripeKey);
+      } else {
+        stripe = new Stripe(testStripeKey);
+      }
+      let priceIds = stripePriceIds;
+      let paymentMode = 'payment';
+
+      const price = await stripe.prices.retrieve(priceIds[0]);
+
+      const PaymentMethods = await strapi
+        .plugin('strapi-stripe')
+        .service('paymentMethodService')
+        .getPaymentMethods(false, price.currency, stripeSettings.paymentMethods);
+
+      const session = await stripe.checkout.sessions.create({
+        line_items: priceIds.map((priceId, index) => {
+          return {
+            price: priceId,
+            quantity: productQuantities[index],
+          };
+        }),
+        mode: paymentMode,
+        payment_method_types: [...PaymentMethods],
+        customer_email: userEmail,
+        allow_promotion_codes: stripeSettings.allowPromotionCode,
+        success_url: `${stripeSettings.checkoutSuccessUrl}?sessionId={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${stripeSettings.checkoutCancelUrl}`,
+        metadata: {
+          productIds: `${productIds}`,
+          productNames: `${productNames}`,
+          productQuantities: `${productQuantities}`,
+          strapiProductIds: `${strapiProductIds}`
+        },
+      });
+      return session;
+
+    } catch (error) {
+      throw new ApplicationError(error.message);
+    }
+  },
+
   async retrieveCheckoutSession(checkoutSessionId) {
     try {
       const stripeSettings = await this.initialize();
