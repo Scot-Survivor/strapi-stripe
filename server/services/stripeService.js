@@ -180,6 +180,12 @@ module.exports = ({ strapi }) => ({
         allow_promotion_codes: stripeSettings.allowPromotionCode,
         success_url: `${stripeSettings.checkoutSuccessUrl}?sessionId={CHECKOUT_SESSION_ID}`,
         cancel_url: `${stripeSettings.checkoutCancelUrl}`,
+        shipping_address_collection:  {
+          allowed_countries: ["GB"],
+        },
+        phone_number_collection: {
+          enabled: true
+        },
         metadata: {
           productIds: `${[productId]}`,
           productNames: `${[productName]}`,
@@ -233,6 +239,12 @@ module.exports = ({ strapi }) => ({
         allow_promotion_codes: stripeSettings.allowPromotionCode,
         success_url: `${stripeSettings.checkoutSuccessUrl}?sessionId={CHECKOUT_SESSION_ID}`,
         cancel_url: `${stripeSettings.checkoutCancelUrl}`,
+        shipping_address_collection:  {
+          allowed_countries: ["GB"],
+        },
+        phone_number_collection: {
+          enabled: true
+        },
         metadata: {
           productIds: `${productIds}`,
           productNames: `${productNames}`,
